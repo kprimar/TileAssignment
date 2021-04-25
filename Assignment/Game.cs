@@ -8,9 +8,9 @@ namespace RPG_Assignment
     {
         int currentFrame = 0;
         public bool gameActive = false;
-        public const int maxRow = 4;
-        public const int maxCol = 4;
-        char[,] map = new char[4, 4];
+        public const int maxRow = 10;
+        public const int maxCol = 10;
+        char[,] map = new char[maxRow, maxCol];
         Player player;
         Monster monster;
 
@@ -26,6 +26,63 @@ namespace RPG_Assignment
             BuildMap();
             RenderMap();
             MovePlayer();
+            MoveMonster();
+            CheckMap();
+        }
+
+        private void MoveMonster()
+        {
+            int pRow = player.MyRow;
+            int pCol = player.MyCol;
+            int mRow = monster.MyRow;
+            int mCol = monster.MyCol;
+
+            int rowDist = mRow - pRow;
+            int colDist = mCol - pCol;
+            if (Math.Abs(rowDist) < Math.Abs(colDist) || colDist == 0)
+            {
+                if (rowDist > 0)
+                {
+                    if (player.MyRow > 0)
+                    {
+                        monster.MyRow--;
+                    }
+
+                }
+                if (rowDist < 0)
+                {
+                    if (monster.MyRow < maxRow - 1)
+                    {
+                        monster.MyRow++;
+                    }
+                }
+            }
+            if (Math.Abs(rowDist) > Math.Abs(colDist) || rowDist == 0)
+            {
+                if (colDist > 0)
+                {
+                    if (player.MyRow > 0)
+                    {
+                        monster.MyCol--;
+                    }
+                }
+                if (colDist < 0)
+                {
+                    if (monster.MyRow < maxRow - 1)
+                    {
+                        monster.MyCol++;
+                    }
+                }
+            }
+            
+
+        }
+
+        private void GameOver()
+        {
+            gameActive = false;
+            Console.Clear();
+            Console.WriteLine("Game Over");
         }
 
         private void MovePlayer()
@@ -73,10 +130,7 @@ namespace RPG_Assignment
             }
             map[player.MyRow, player.MyCol] = player.Symbol;
             map[monster.MyRow, monster.MyCol] = monster.Symbol;
-            if (map[player.MyRow, player.MyCol] == map[monster.MyRow, monster.MyCol])
-            {
-                map[player.MyRow, player.MyCol] = player.Symbol;
-            }
+
         }
 
         public void RenderMap()
@@ -93,5 +147,13 @@ namespace RPG_Assignment
                 Console.WriteLine();
             }
         }
+        private void CheckMap()
+        {
+            if (player.MyRow == monster.MyRow && player.MyCol == monster.MyCol)
+            {
+                GameOver();
+            }
+        }
     }
+
 }
