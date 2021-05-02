@@ -10,7 +10,7 @@ namespace RPG_Assignment
         public bool gameActive = false;
         public const int maxRow = 10;
         public const int maxCol = 10;
-        char[,] map = new char[maxRow, maxCol];
+        Tile[,] map = new Tile[maxRow, maxCol];
         Player player;
         Monster monster;
 
@@ -32,50 +32,22 @@ namespace RPG_Assignment
 
         private void MoveMonster()
         {
-            int pRow = player.MyRow;
-            int pCol = player.MyCol;
-            int mRow = monster.MyRow;
-            int mCol = monster.MyCol;
-
-            int rowDist = mRow - pRow;
-            int colDist = mCol - pCol;
-            if (Math.Abs(rowDist) < Math.Abs(colDist) || colDist == 0)
+            if (monster.MyRow < player.MyRow)
             {
-                if (rowDist > 0)
-                {
-                    if (player.MyRow > 0)
-                    {
-                        monster.MyRow--;
-                    }
-
-                }
-                if (rowDist < 0)
-                {
-                    if (monster.MyRow < maxRow - 1)
-                    {
-                        monster.MyRow++;
-                    }
-                }
+                monster.MyRow++;
             }
-            if (Math.Abs(rowDist) > Math.Abs(colDist) || rowDist == 0)
+            else if (monster.MyRow > player.MyRow)
             {
-                if (colDist > 0)
-                {
-                    if (player.MyRow > 0)
-                    {
-                        monster.MyCol--;
-                    }
-                }
-                if (colDist < 0)
-                {
-                    if (monster.MyRow < maxRow - 1)
-                    {
-                        monster.MyCol++;
-                    }
-                }
+                monster.MyRow--;
             }
-            
-
+            else if (monster.MyCol < player.MyCol)
+            {
+                monster.MyCol++;
+            }
+            else if (monster.MyCol > player.MyCol)
+            {
+                monster.MyCol--;
+            }
         }
 
         private void GameOver()
@@ -125,12 +97,10 @@ namespace RPG_Assignment
             {
                 for (int j = 0; j < maxCol; j++)
                 {
-                    map[i, j] = '*';
+                    Tile thisTile = new Tile();
+                    map[i, j] = thisTile;
                 }
             }
-            map[player.MyRow, player.MyCol] = player.Symbol;
-            map[monster.MyRow, monster.MyCol] = monster.Symbol;
-
         }
 
         public void RenderMap()
@@ -142,7 +112,15 @@ namespace RPG_Assignment
             {
                 for (int j = 0; j < maxCol; j++)
                 {
-                    Console.Write(map[i, j]);
+                    if(map[i, j] == map[player.MyRow, player.MyCol])
+                    {
+                        map[i, j].symbol = player.Symbol;
+                    }
+                    if (map[i, j] == map[monster.MyRow, monster.MyCol])
+                    {
+                        map[i, j].symbol = monster.Symbol;
+                    }
+                    Console.Write(map[i, j].symbol);
                 }
                 Console.WriteLine();
             }
