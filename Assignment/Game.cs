@@ -19,11 +19,11 @@ namespace RPG_Assignment
             gameActive = true;
             player = new Player();
             monster = new Monster();
+            BuildMap();
         }
 
         public void Update()
         {
-            BuildMap();
             RenderMap();
             MovePlayer();
             MoveMonster();
@@ -63,7 +63,7 @@ namespace RPG_Assignment
 
             if (input.Key == ConsoleKey.W || input.Key == ConsoleKey.UpArrow)
             {
-                if (player.MyRow > 0)
+                if (player.MyRow > 0 && map[player.MyRow, player.MyCol].isWall != true)
                 {
                     player.MyRow--;
                 }
@@ -99,8 +99,20 @@ namespace RPG_Assignment
                 {
                     Tile thisTile = new Tile();
                     map[i, j] = thisTile;
+                    if (i == 0 || j == 0 || i == maxRow - 1 || j == maxCol - 1)
+                    {
+                        thisTile.isWall = true;
+                    }
                 }
             }
+            map[3, 2].isWall = true;
+            map[3, 3].isWall = true;
+            map[3, 6].isWall = true;
+            map[3, 7].isWall = true;
+            map[6, 5].isWall = true;
+            map[6, 6].isWall = true;
+            map[7, 3].isWall = true;
+            map[7, 4].isWall = true;
         }
 
         public void RenderMap()
@@ -108,19 +120,24 @@ namespace RPG_Assignment
             Console.Clear();
             Console.WriteLine("---FRAME " + currentFrame + "---");
             currentFrame++;
+            char symbolToPrint;
             for (int i = 0; i < maxRow; i++)
             {
                 for (int j = 0; j < maxCol; j++)
                 {
-                    if(map[i, j] == map[player.MyRow, player.MyCol])
+                    if(i == player.MyRow && j == player.MyCol)
                     {
-                        map[i, j].symbol = player.Symbol;
+                        symbolToPrint = player.Symbol;
                     }
-                    if (map[i, j] == map[monster.MyRow, monster.MyCol])
+                    else if (i == monster.MyRow && j == monster.MyCol)
                     {
-                        map[i, j].symbol = monster.Symbol;
+                        symbolToPrint = monster.Symbol;
                     }
-                    Console.Write(map[i, j].symbol);
+                    else
+                    {
+                        symbolToPrint = map[i, j].GetSymbol();
+                    }
+                    Console.Write(symbolToPrint);
                 }
                 Console.WriteLine();
             }

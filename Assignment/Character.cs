@@ -15,8 +15,8 @@ namespace RPG_Assignment
     {
         public Player()
         {
-            MyRow = 0;
-            MyCol = 0;
+            MyRow = 1;
+            MyCol = 1;
             Symbol = 'P';
         }
     }
