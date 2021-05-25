@@ -25,8 +25,8 @@ namespace RPG_Assignment
     {
         public Monster()
         {
-            MyRow = Game.maxRow - 1;
-            MyCol = Game.maxCol - 1;
+            MyRow = Game.maxRow - 2;
+            MyCol = Game.maxCol - 2;
             Symbol = 'M';
         }
     }

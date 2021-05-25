@@ -10,7 +10,7 @@ namespace RPG_Assignment
         public bool gameActive = false;
         public const int maxRow = 10;
         public const int maxCol = 10;
-        Tile[,] map = new Tile[maxRow, maxCol];
+        Tile[,] tileMap = new Tile[maxRow, maxCol];
         Player player;
         Monster monster;
 
@@ -35,18 +35,35 @@ namespace RPG_Assignment
             if (monster.MyRow < player.MyRow)
             {
                 monster.MyRow++;
+                if(tileMap[monster.MyRow,monster.MyCol].isWall == true)
+                {
+                    monster.MyRow--;
+                }
             }
             else if (monster.MyRow > player.MyRow)
             {
                 monster.MyRow--;
+                if (tileMap[monster.MyRow, monster.MyCol].isWall == true)
+                {
+                    monster.MyRow++;
+                }
             }
             else if (monster.MyCol < player.MyCol)
             {
                 monster.MyCol++;
+                if (tileMap[monster.MyRow, monster.MyCol].isWall == true)
+                {
+                    monster.MyCol--;
+                }
             }
             else if (monster.MyCol > player.MyCol)
             {
                 monster.MyCol--;
+                if (tileMap[monster.MyRow, monster.MyCol].isWall == true)
+                {
+                    monster.MyCol++;
+                }
+
             }
         }
 
@@ -63,56 +80,80 @@ namespace RPG_Assignment
 
             if (input.Key == ConsoleKey.W || input.Key == ConsoleKey.UpArrow)
             {
-                if (player.MyRow > 0 && map[player.MyRow, player.MyCol].isWall != true)
+                if (player.MyRow > 0)
                 {
-                    player.MyRow--;
+                    if(tileMap[player.MyRow - 1, player.MyCol].isWall == false)
+                    {
+                        player.MyRow--;
+                    }
                 }
             }
             else if (input.Key == ConsoleKey.S || input.Key == ConsoleKey.DownArrow)
             {
                 if(player.MyRow < maxRow - 1)
                 {
-                    player.MyRow++;
+                    if(tileMap[player.MyRow + 1, player.MyCol].isWall == false)
+                    {
+                        player.MyRow++;
+                    }                    
                 }
             }
             else if (input.Key == ConsoleKey.A || input.Key == ConsoleKey.LeftArrow)
             {
                 if (player.MyCol > 0)
                 {
-                    player.MyCol--;
+                    if (tileMap[player.MyRow, player.MyCol - 1].isWall == false)
+                    {
+                        player.MyCol--;
+                    }
                 }
             }
             else if (input.Key == ConsoleKey.D || input.Key == ConsoleKey.RightArrow)
             {
-                if(player.MyCol < maxCol - 1)
+                if (player.MyCol < maxCol + 1)
                 {
-                    player.MyCol++;
+                    if (tileMap[player.MyRow, player.MyCol + 1].isWall == false)
+                    {
+                        player.MyCol++;
+                    }
                 }
             }
         }
 
         private void BuildMap()
         {
+
+            char[][] map = new char[][]
+            {
+                new char[] {'*' ,'*' ,'*' ,'*' ,'*' ,'*' ,'*' ,'*' ,'*' ,'*' },
+                new char[] {'*' ,'-' ,'-' ,'-' ,'-' ,'-' ,'-' ,'-' ,'-' ,'*' },
+                new char[] {'*' ,'-' ,'*' ,'*' ,'*' ,'-' ,'-' ,'-' ,'-' ,'*' },
+                new char[] {'*' ,'-' ,'-' ,'*' ,'-' ,'-' ,'-' ,'-' ,'-' ,'*' },
+                new char[] {'*' ,'-' ,'-' ,'*' ,'-' ,'-' ,'-' ,'-' ,'-' ,'*' },
+                new char[] {'*' ,'-' ,'-' ,'-' ,'-' ,'-' ,'-' ,'-' ,'-' ,'*' },
+                new char[] {'*' ,'-' ,'-' ,'-' ,'-' ,'-' ,'*' ,'-' ,'-' ,'*' },
+                new char[] {'*' ,'-' ,'-' ,'-' ,'-' ,'-' ,'*' ,'-' ,'-' ,'*' },
+                new char[] {'*' ,'-' ,'-' ,'-' ,'-' ,'-' ,'*' ,'-' ,'-' ,'*' },
+                new char[] {'*' ,'*' ,'*' ,'*' ,'*' ,'*' ,'*' ,'*' ,'*' ,'*' },
+            };
+
             for (int i = 0; i < maxRow; i++)
             {
                 for (int j = 0; j < maxCol; j++)
                 {
                     Tile thisTile = new Tile();
-                    map[i, j] = thisTile;
-                    if (i == 0 || j == 0 || i == maxRow - 1 || j == maxCol - 1)
+                    thisTile.symbol = map[i][j];
+                    if (thisTile.symbol == '*')
                     {
                         thisTile.isWall = true;
                     }
+                    else
+                    {
+                        thisTile.isWall = false;
+                    }
+                    tileMap[i, j] = thisTile;
                 }
             }
-            map[3, 2].isWall = true;
-            map[3, 3].isWall = true;
-            map[3, 6].isWall = true;
-            map[3, 7].isWall = true;
-            map[6, 5].isWall = true;
-            map[6, 6].isWall = true;
-            map[7, 3].isWall = true;
-            map[7, 4].isWall = true;
         }
 
         public void RenderMap()
@@ -120,6 +161,7 @@ namespace RPG_Assignment
             Console.Clear();
             Console.WriteLine("---FRAME " + currentFrame + "---");
             currentFrame++;
+
             char symbolToPrint;
             for (int i = 0; i < maxRow; i++)
             {
@@ -135,7 +177,7 @@ namespace RPG_Assignment
                     }
                     else
                     {
-                        symbolToPrint = map[i, j].GetSymbol();
+                        symbolToPrint = tileMap[i, j].symbol;
                     }
                     Console.Write(symbolToPrint);
                 }
