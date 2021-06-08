@@ -11,6 +11,7 @@ namespace RPG_Assignment
         public const int maxRow = 10;
         public const int maxCol = 10;
         Tile[,] tileMap = new Tile[maxRow, maxCol];
+        List<Tile> monsterPath = new List<Tile>();
         Player player;
         Monster monster;
 
@@ -32,39 +33,83 @@ namespace RPG_Assignment
 
         private void MoveMonster()
         {
-            if (monster.MyRow < player.MyRow)
-            {
-                monster.MyRow++;
-                if(tileMap[monster.MyRow,monster.MyCol].isWall == true)
-                {
-                    monster.MyRow--;
-                }
-            }
-            else if (monster.MyRow > player.MyRow)
-            {
-                monster.MyRow--;
-                if (tileMap[monster.MyRow, monster.MyCol].isWall == true)
-                {
-                    monster.MyRow++;
-                }
-            }
-            else if (monster.MyCol < player.MyCol)
-            {
-                monster.MyCol++;
-                if (tileMap[monster.MyRow, monster.MyCol].isWall == true)
-                {
-                    monster.MyCol--;
-                }
-            }
-            else if (monster.MyCol > player.MyCol)
-            {
-                monster.MyCol--;
-                if (tileMap[monster.MyRow, monster.MyCol].isWall == true)
-                {
-                    monster.MyCol++;
-                }
+            int destinationRow = player.MyRow;
+            int destinationCol = player.MyCol;
+            int nextRow = monster.MyRow;
+            int nextCol = monster.MyCol;
 
+            if(destinationRow < monster.MyRow)
+            {
+                while (monster.MyRow != destinationRow)
+                {
+                    nextRow--;
+                    Console.WriteLine(destinationRow);
+                    Console.WriteLine(nextRow);
+                    monsterPath.Add(tileMap[nextRow, monster.MyCol]);
+                }
             }
+            else if (destinationRow > monster.MyRow)
+            {
+                while (monster.MyRow != destinationRow)
+                {
+                    nextRow++;
+                    monsterPath.Add(tileMap[nextRow, monster.MyCol]);
+                }
+            }
+
+            if (destinationCol < monster.MyCol)
+            {
+                while (monster.MyCol != destinationCol)
+                {
+                    nextCol--;
+                    monsterPath.Add(tileMap[nextRow, nextCol]);
+                }
+            }
+            else if (destinationCol > monster.MyCol)
+            {
+                while (monster.MyCol != destinationCol)
+                {
+                    nextCol++;
+                    monsterPath.Add(tileMap[nextRow, nextCol]);
+                }
+            }
+
+
+
+            Console.WriteLine(monsterPath.Count);
+
+            //if (monster.MyRow < player.MyRow)
+            //{
+            //    monster.MyRow++;
+            //    if(tileMap[monster.MyRow,monster.MyCol].isWall == true)
+            //    {
+            //        monster.MyRow--;
+            //    }
+            //}
+            //else if (monster.MyRow > player.MyRow)
+            //{
+            //    monster.MyRow--;
+            //    if (tileMap[monster.MyRow, monster.MyCol].isWall == true)
+            //    {
+            //        monster.MyRow++;
+            //    }
+            //}
+            //else if (monster.MyCol < player.MyCol)
+            //{
+            //    monster.MyCol++;
+            //    if (tileMap[monster.MyRow, monster.MyCol].isWall == true)
+            //    {
+            //        monster.MyCol--;
+            //    }
+            //}
+            //else if (monster.MyCol > player.MyCol)
+            //{
+            //    monster.MyCol--;
+            //    if (tileMap[monster.MyRow, monster.MyCol].isWall == true)
+            //    {
+            //        monster.MyCol++;
+            //    }
+            //}
         }
 
         private void GameOver()
@@ -158,7 +203,7 @@ namespace RPG_Assignment
 
         public void RenderMap()
         {
-            Console.Clear();
+            //Console.Clear();
             Console.WriteLine("---FRAME " + currentFrame + "---");
             currentFrame++;
 
