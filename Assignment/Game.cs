@@ -4,23 +4,33 @@ using System.Text;
 
 namespace RPG_Assignment
 {
+    public enum Directions
+    {
+        Up,
+        Down,
+        Right,
+        Left,
+    }
     class Game
     {
         int currentFrame = 0;
         public bool gameActive = false;
-        public const int maxRow = 10;
-        public const int maxCol = 10;
-        Tile[,] tileMap = new Tile[maxRow, maxCol];
-        List<Tile> monsterPath = new List<Tile>();
+
+        private Tile[,] tileMap;
+        public static int maxRow;
+        public static int maxCol;
+       
         Player player;
         Monster monster;
+        List<Tile> monsterPath = new List<Tile>();
+        
 
         public void StartGame()
         {
             gameActive = true;
+            BuildMap();
             player = new Player();
             monster = new Monster();
-            BuildMap();
         }
 
         public void Update()
@@ -33,85 +43,30 @@ namespace RPG_Assignment
 
         private void MoveMonster()
         {
-            int destinationRow = player.MyRow;
-            int destinationCol = player.MyCol;
-            int nextRow = monster.MyRow;
-            int nextCol = monster.MyCol;
+            int targetRow = monster.MyRow;
+            int targetCol = monster.MyCol;
 
-            if(destinationRow < monster.MyRow)
+            if(targetRow > player.MyRow)
             {
-                while (monster.MyRow != destinationRow)
-                {
-                    nextRow--;
-                    Console.WriteLine(destinationRow);
-                    Console.WriteLine(nextRow);
-                    monsterPath.Add(tileMap[nextRow, monster.MyCol]);
-                }
+                targetRow--;
             }
-            else if (destinationRow > monster.MyRow)
+            else if (targetRow < player.MyRow)
             {
-                while (monster.MyRow != destinationRow)
-                {
-                    nextRow++;
-                    monsterPath.Add(tileMap[nextRow, monster.MyCol]);
-                }
+                targetRow++;
+            }
+            else if (targetCol > player.MyCol)
+            {
+                targetCol--;
+            }
+            else if (targetCol < player.MyCol)
+            {
+                targetCol++;
             }
 
-            if (destinationCol < monster.MyCol)
-            {
-                while (monster.MyCol != destinationCol)
-                {
-                    nextCol--;
-                    monsterPath.Add(tileMap[nextRow, nextCol]);
-                }
-            }
-            else if (destinationCol > monster.MyCol)
-            {
-                while (monster.MyCol != destinationCol)
-                {
-                    nextCol++;
-                    monsterPath.Add(tileMap[nextRow, nextCol]);
-                }
-            }
-
-
-
-            Console.WriteLine(monsterPath.Count);
-
-            //if (monster.MyRow < player.MyRow)
-            //{
-            //    monster.MyRow++;
-            //    if(tileMap[monster.MyRow,monster.MyCol].isWall == true)
-            //    {
-            //        monster.MyRow--;
-            //    }
-            //}
-            //else if (monster.MyRow > player.MyRow)
-            //{
-            //    monster.MyRow--;
-            //    if (tileMap[monster.MyRow, monster.MyCol].isWall == true)
-            //    {
-            //        monster.MyRow++;
-            //    }
-            //}
-            //else if (monster.MyCol < player.MyCol)
-            //{
-            //    monster.MyCol++;
-            //    if (tileMap[monster.MyRow, monster.MyCol].isWall == true)
-            //    {
-            //        monster.MyCol--;
-            //    }
-            //}
-            //else if (monster.MyCol > player.MyCol)
-            //{
-            //    monster.MyCol--;
-            //    if (tileMap[monster.MyRow, monster.MyCol].isWall == true)
-            //    {
-            //        monster.MyCol++;
-            //    }
-            //}
+            monster.MyRow = targetRow;
+            monster.MyCol = targetCol;
         }
-
+ 
         private void GameOver()
         {
             gameActive = false;
@@ -122,52 +77,44 @@ namespace RPG_Assignment
         private void MovePlayer()
         {
             ConsoleKeyInfo input = Console.ReadKey();
+            int row;
+            int col;
+            Directions playerDirection = Directions.Right;
 
             if (input.Key == ConsoleKey.W || input.Key == ConsoleKey.UpArrow)
             {
-                if (player.MyRow > 0)
-                {
-                    if(tileMap[player.MyRow - 1, player.MyCol].isWall == false)
-                    {
-                        player.MyRow--;
-                    }
-                }
+                playerDirection = Directions.Up;
             }
             else if (input.Key == ConsoleKey.S || input.Key == ConsoleKey.DownArrow)
             {
-                if(player.MyRow < maxRow - 1)
-                {
-                    if(tileMap[player.MyRow + 1, player.MyCol].isWall == false)
-                    {
-                        player.MyRow++;
-                    }                    
-                }
+                playerDirection = Directions.Down;
             }
             else if (input.Key == ConsoleKey.A || input.Key == ConsoleKey.LeftArrow)
             {
-                if (player.MyCol > 0)
-                {
-                    if (tileMap[player.MyRow, player.MyCol - 1].isWall == false)
-                    {
-                        player.MyCol--;
-                    }
-                }
+                playerDirection = Directions.Left;
             }
             else if (input.Key == ConsoleKey.D || input.Key == ConsoleKey.RightArrow)
             {
-                if (player.MyCol < maxCol + 1)
-                {
-                    if (tileMap[player.MyRow, player.MyCol + 1].isWall == false)
-                    {
-                        player.MyCol++;
-                    }
-                }
+                playerDirection = Directions.Right;
             }
+
+            GetRowAndColForDirection(playerDirection, out row, out col);
+
+            int targetRow = player.MyRow + row;
+            int targetCol = player.MyCol + col;
+
+            if (IsPositionEmptyAndValid(targetRow, targetCol, tileMap))
+            {
+                player.MyRow = targetRow;
+                player.MyCol = targetCol;
+            }
+
+
+
         }
 
         private void BuildMap()
         {
-
             char[][] map = new char[][]
             {
                 new char[] {'*' ,'*' ,'*' ,'*' ,'*' ,'*' ,'*' ,'*' ,'*' ,'*' },
@@ -182,37 +129,81 @@ namespace RPG_Assignment
                 new char[] {'*' ,'*' ,'*' ,'*' ,'*' ,'*' ,'*' ,'*' ,'*' ,'*' },
             };
 
+            maxRow = map.Length;
+            maxCol = map[0].Length;
+            tileMap = new Tile[maxRow, maxCol];
+
             for (int i = 0; i < maxRow; i++)
             {
                 for (int j = 0; j < maxCol; j++)
                 {
-                    Tile thisTile = new Tile();
-                    thisTile.symbol = map[i][j];
-                    if (thisTile.symbol == '*')
-                    {
-                        thisTile.isWall = true;
-                    }
-                    else
-                    {
-                        thisTile.isWall = false;
-                    }
-                    tileMap[i, j] = thisTile;
+                    char symbol = map[i][j];                    //get symbol from jagged array
+                    
+                    Tile thisTile = new Tile(symbol);           //create new tile and pass the symbol
+                    thisTile.MyRow = i; 
+                    thisTile.MyCol = j;
+                    tileMap[i, j] = thisTile;                   //add this tile to the multidimensional array
                 }
             }
         }
 
+        public static void GetRowAndColForDirection(Directions dir, out int row, out int col)
+        {
+            switch (dir)
+            {
+                case Directions.Up:
+                    row = -1;
+                    col = 0;
+                    break;
+                case Directions.Right:
+                    row = 0;
+                    col = 1;
+                    break;
+                case Directions.Down:
+                    row = 1;
+                    col = 0;
+                    break;
+                case Directions.Left:
+                    row = 0;
+                    col = -1;
+                    break;
+
+                default:
+                    row = col = 0;
+                    break;
+            }
+
+        }
+
+        public static bool IsPositionEmptyAndValid(int row, int col, Tile[,] tileMap)
+        {
+            bool validRow = (row >= 0) && (row < maxRow);
+            bool validCol = (col >= 0) && (col < maxCol);
+
+            bool isEmpty = (validRow && validCol) && tileMap[row, col].IsEmpty();
+
+            return validRow && validCol && isEmpty;
+        }
+
         public void RenderMap()
         {
-            //Console.Clear();
-            Console.WriteLine("---FRAME " + currentFrame + "---");
-            currentFrame++;
+            Console.Clear();
 
-            char symbolToPrint;
+            currentFrame++;
+            Console.WriteLine("---FRAME " + currentFrame + "---");
+
+            Tile monsterTile = tileMap[monster.MyRow, monster.MyCol];
+            Tile playerTile = tileMap[player.MyRow, player.MyCol];
+
+            List<Tile> path = Pathfinder.GetPath(monsterTile, playerTile, tileMap);
+
+
             for (int i = 0; i < maxRow; i++)
             {
                 for (int j = 0; j < maxCol; j++)
                 {
-                    if(i == player.MyRow && j == player.MyCol)
+                    char symbolToPrint;
+                    if (i == player.MyRow && j == player.MyCol)
                     {
                         symbolToPrint = player.Symbol;
                     }
@@ -222,10 +213,19 @@ namespace RPG_Assignment
                     }
                     else
                     {
-                        symbolToPrint = tileMap[i, j].symbol;
+                        Tile currentTile = tileMap[i, j];
+                        if(path.Contains(currentTile))
+                        {
+                            symbolToPrint = 'x';
+                        }
+                        else
+                        {
+                            symbolToPrint = currentTile.Symbol;
+                        }
                     }
                     Console.Write(symbolToPrint);
                 }
+
                 Console.WriteLine();
             }
         }
