@@ -18,8 +18,8 @@ namespace RPG_Assignment
 
         private static int GetSqrDistance(Tile a, Tile b)
         {
-            int deltaX = a.MyRow = b.MyRow;
-            int deltaY = a.MyCol = b.MyCol;
+            int deltaX = a.MyRow - b.MyRow;
+            int deltaY = a.MyCol - b.MyCol;
 
             return (deltaX * deltaY) + (deltaY * deltaX);
         }

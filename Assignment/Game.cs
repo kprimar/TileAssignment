@@ -22,7 +22,7 @@ namespace RPG_Assignment
        
         Player player;
         Monster monster;
-        List<Tile> monsterPath = new List<Tile>();
+        List<Tile> path = new List<Tile>();
         
 
         public void StartGame()
@@ -43,28 +43,32 @@ namespace RPG_Assignment
 
         private void MoveMonster()
         {
-            int targetRow = monster.MyRow;
-            int targetCol = monster.MyCol;
+            int index = path.Count - 2;
+            monster.MyRow = path[index].MyRow;
+            monster.MyCol = path[index].MyCol;
 
-            if(targetRow > player.MyRow)
-            {
-                targetRow--;
-            }
-            else if (targetRow < player.MyRow)
-            {
-                targetRow++;
-            }
-            else if (targetCol > player.MyCol)
-            {
-                targetCol--;
-            }
-            else if (targetCol < player.MyCol)
-            {
-                targetCol++;
-            }
+            //int targetRow = monster.MyRow;
+            //int targetCol = monster.MyCol;
 
-            monster.MyRow = targetRow;
-            monster.MyCol = targetCol;
+            //if(targetRow > player.MyRow)
+            //{
+            //    targetRow--;
+            //}
+            //else if (targetRow < player.MyRow)
+            //{
+            //    targetRow++;
+            //}
+            //else if (targetCol > player.MyCol)
+            //{
+            //    targetCol--;
+            //}
+            //else if (targetCol < player.MyCol)
+            //{
+            //    targetCol++;
+            //}
+
+            //monster.MyRow = targetRow;
+            //monster.MyCol = targetCol;
         }
  
         private void GameOver()
@@ -195,7 +199,7 @@ namespace RPG_Assignment
             Tile monsterTile = tileMap[monster.MyRow, monster.MyCol];
             Tile playerTile = tileMap[player.MyRow, player.MyCol];
 
-            List<Tile> path = Pathfinder.GetPath(monsterTile, playerTile, tileMap);
+            path = Pathfinder.GetPath(monsterTile, playerTile, tileMap);
 
 
             for (int i = 0; i < maxRow; i++)
